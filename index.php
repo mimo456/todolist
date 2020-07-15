@@ -1,7 +1,9 @@
 <?php
     require_once('functions.php');//外部ファイルの読み込み
 
-
+    // echo "<pre>";
+    // echo var_dump($_POST);
+    // echo "<pre>";
 
     if(isset($_POST['submit'])){//送信されたデータをテーブルに格納
 
@@ -22,8 +24,13 @@
 
         unset($name);
     }
-
+    //原因特定のためのテスト
+    echo "test";
+    if(isset($_POST['method'])){
+        echo "成功";
+    }
     if(isset($_POST['method'])&&($_POST['method']==='put')){//済んだを押したものを更新して非表示にする
+        echo "test2";
         $id=$_POST["id"];
         $id=htmlspecialchars($id,ENT_QUOTES);
         $id=(int)$id;
@@ -71,12 +78,14 @@
             // echo var_dump($task);
             // echo "<pre>";
             print '<li>';
-            print $task["name"].'<br>';
+            print $task["name"];
+            print '<br>';
             print   '
                     <from action="index.php" method="post">
                         <input type="hidden" name="method" value="put">
                         <input type="hidden" name="id" value="'.$task['id'].'">
-                        <button type="submit">済んだ</button>
+                        
+                        <input type="submit" value="済んだ">
                     </form>
                     ';
             print '</li>';
