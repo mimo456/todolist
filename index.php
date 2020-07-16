@@ -26,7 +26,7 @@
     }
     //原因特定のためのテスト
     echo "test";
-    if(isset($_POST['method'])){
+    if(isset($_POST['method'])){//メソッドを受け取れていない
         echo "成功";
     }
     if(isset($_POST['method'])&&($_POST['method']==='put')){//済んだを押したものを更新して非表示にする
