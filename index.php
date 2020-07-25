@@ -24,13 +24,13 @@
 
         unset($name);
     }
-    //原因特定のためのテスト
-    echo "test";
-    if(isset($_POST['method'])){//メソッドを受け取れていない
-        echo "成功";
-    }
+    // //原因特定のためのテスト
+    // echo "test";
+    // if(isset($_POST['method'])){//メソッドを受け取れていない
+    //     echo "成功";
+    // }
     if(isset($_POST['method'])&&($_POST['method']==='put')){//済んだを押したものを更新して非表示にする
-        echo "test2";
+        // echo "test2";
         $id=$_POST["id"];
         $id=htmlspecialchars($id,ENT_QUOTES);
         $id=(int)$id;
@@ -38,7 +38,7 @@
         $sql='UPDATE tasks SET done=1 WHERE id=?';
         $stmt=$dbh->prepare($sql);
 
-        $stmt->bindValue(1,$id,PDO::PARAM_INT);//doneを0から1に変えて0のものだけを表示する
+        $stmt->bindValue(1,$id,PDO::PARAM_INT);
         $stmt->execute();
 
         $dbh=null;
@@ -81,7 +81,7 @@
             print $task["name"];
             print '<br>';
             print   '
-                    <from action="index.php" method="post">
+                    <form action="index.php" method="post">
                         <input type="hidden" name="method" value="put">
                         <input type="hidden" name="id" value="'.$task['id'].'">
                         
