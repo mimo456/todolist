@@ -8,20 +8,22 @@ class DBTodo extends DB
         $sql = "SELECT * FROM tasks";
         $res = parent::executeSQL($sql, null);
         $data = "<table class='recordlist' id='goodsTable'>";
-        $data .= "<tr><th>ID</th><th>やること</th><th>日付</th><th></th><th></th></tr>\n";
+        $data .= "<tr><th>やること</th><th>優先順位</th><th></th><th></th></tr>\n";
         foreach ($rows = $res->fetchAll(PDO::FETCH_NUM) as $row) {
             $data .= "<tr>";
             for ($i=0;$i<count($row);$i++) {
-                $data .= "<td>{$row[$i]}</td>";
+                if($i!==0){//idを表示させない
+                    $data .= "<td>{$row[$i]}</td>";
+                }
             }
             //修正ボタンのコード
             //修正ボタンを押すと$_POST['update']が送られて、受け取ったらindex.phpで更新表示をする
-            //row[0]にはid,row[1]にはtext,row[2]にはdateが入っている
+            //row[0]にはid,row[1]にはtext,row[2]にはpriorityが入っている
             $data .= <<<eof
                     <td><form method='post' action=''>
                     <input type='hidden' name='id' value='{$row[0]}'>
                     <input type='hidden' name='text' value='{$row[1]}'>
-                    <input type='hidden' name='date' value='{$row[2]}'>
+                    <input type='hidden' name='priority' value='{$row[2]}'>
                     <input type='submit' name='update' value='修正'>
                     </form></td>
                 eof;
@@ -41,16 +43,16 @@ class DBTodo extends DB
 
     public function InsertTodo()
     {//追加
-        $sql = "INSERT INTO tasks (text,date) VALUES(?,?)";
-        $array = array(htmlspecialchars($_POST['todo'], ENT_QUOTES, 'UTF-8'),htmlspecialchars($_POST['date'], ENT_QUOTES, 'UTF-8'));
+        $sql = "INSERT INTO tasks (text,priority) VALUES(?,?)";
+        $array = array(htmlspecialchars($_POST['todo'], ENT_QUOTES, 'UTF-8'),htmlspecialchars($_POST['priority'], ENT_QUOTES, 'UTF-8'));
         parent::executeSQL($sql, $array);
     }
 
-    public function UpdateTodo($id,$text,$date)
+    public function UpdateTodo($id,$text,$priority)
     {//修正
-        $sql = "UPDATE tasks SET text=?,date=? WHERE id={$id}";
+        $sql = "UPDATE tasks SET text=?,priority=? WHERE id={$id}";
         //array関数の引数の順番に注意する
-        $array = array($text,$date);
+        $array = array($text,$priority);
         parent::executeSQL($sql, $array);
     }
 
@@ -61,7 +63,7 @@ class DBTodo extends DB
 
     public function DateForUpdate($ID)
     {
-        return $this->FieldValueForUpdate($ID, "date");
+        return $this->FieldValueForUpdate($ID, "priority");
     }
 
     private function FieldValueForUpdate($ID, $field)
