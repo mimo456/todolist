@@ -5,7 +5,7 @@ class DBTodo extends DB
     //goodsテーブルのCRUD担当
     public function SelectTodoAll()
     {
-        $sql = "SELECT * FROM tasks";
+        $sql = "SELECT * FROM tasks order by priority";
         $res = parent::executeSQL($sql, null);
         $data = "<table class='recordlist' id='goodsTable'>";
         $data .= "<tr><th>やること</th><th>優先順位</th><th></th><th></th></tr>\n";
@@ -41,7 +41,7 @@ class DBTodo extends DB
         return $data;
     }
 
-    public function InsertTodo()
+    public function InsertTodo()//優先順位を決めるため引数で受け取ってから処理をする
     {//追加
         $sql = "INSERT INTO tasks (text,priority) VALUES(?,?)";
         $array = array(htmlspecialchars($_POST['todo'], ENT_QUOTES, 'UTF-8'),htmlspecialchars($_POST['priority'], ENT_QUOTES, 'UTF-8'));

@@ -1,4 +1,8 @@
 <?php
+echo "<pre>";
+echo var_dump($_POST);
+echo "</pre>";
+
 require_once('DBTodo.php');
 $dbTodo = new DBTodo();
 //更新処理
@@ -52,10 +56,10 @@ $data = $dbTodo->selectTodoAll();
         <h1>Todoリスト</h1>
         <form action="" method="post">
             やること<input type="text" name="todo" value="<?php if (isset($_POST['update'])){echo $_POST['text'];} ?>">
-            <select name="priority">
-                <option value="低">低</option>
-                <option value="中">中</option>
-                <option value="高">高</option>
+            優先順位<select name="priority">
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
             </select>
             <input type="submit" value="追加" name="submitEntry">
         </form><br>
@@ -72,9 +76,9 @@ $data = $dbTodo->selectTodoAll();
             value="<?php echo $dbTodoText;?>"required></label>
             <label><span class="entrylabel">優先順位</span>
             <select name="priority">
-                <option value="低" <?= $_POST['priority'] == '低' ? 'selected' : "" ?>>低</option>
-                <option value="中" <?= $_POST['priority'] == '中' ? 'selected' : "" ?>>中</option>
-                <option value="高" <?= $_POST['priority'] == '高' ? 'selected' : "" ?>>高</option>
+                <option value="A" <?= $_POST['priority'] == '低' ? 'selected' : "" ?>>A</option>
+                <option value="B" <?= $_POST['priority'] == '中' ? 'selected' : "" ?>>B</option>
+                <option value="C" <?= $_POST['priority'] == '高' ? 'selected' : "" ?>>C</option>
             </select></label>
             <input type='submit' name='submitUpdate' value=' 　送信　 '>
         </form>
