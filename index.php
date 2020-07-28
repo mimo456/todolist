@@ -1,96 +1,80 @@
 <?php
-    require_once('functions.php');//外部ファイルの読み込み
+// echo "<pre>";
+// var_dump($_POST);
+// echo "</pre>";
 
-    // echo "<pre>";
-    // echo var_dump($_POST);
-    // echo "<pre>";
+require_once('DBTodo.php');
+$dbTodo = new DBTodo();
+//更新処理
+if (isset($_POST['submitUpdate'])) {
+    $dbTodoId=htmlspecialchars($_POST['id'], ENT_QUOTES, 'UTF-8');
+    $dbTodoText=htmlspecialchars($_POST['text'], ENT_QUOTES, 'UTF-8');
+    $dbDate=htmlspecialchars($_POST['date'], ENT_QUOTES, 'UTF-8');
+    $dbTodo->UpdateTodo($dbTodoId,$dbTodoText,$dbDate);
+}
 
-    if(isset($_POST['submit'])){//送信されたデータをテーブルに格納
+//修正用フォーム要素の表示
+//echo $data;で出力したHTMLはgoods.phpにあるので$_POST['id']などはgoods.phpで受け取れる
+if (isset($_POST['update'])) {
+    $dbTodoId=htmlspecialchars($_POST['id'], ENT_QUOTES, 'UTF-8');
+    $dbTodoText=htmlspecialchars($_POST['text'], ENT_QUOTES, 'UTF-8');
+    $dbDate=htmlspecialchars($_POST['date'], ENT_QUOTES, 'UTF-8');
+    //修正対象の値を取得
+    $dbTodo->UpdateTodo($dbTodoId, $dbTodoText,$dbDate);
+    //クラスを記述することで表示/非表示を設定
+    $entryCss = "class='hideArea'";
+    $updateCss = "";
+} else {
+    $entryCss = "";
+    $updateCss = "class='hideArea'";
+}
 
-        $name=$_POST['name'];
-        $name=htmlspecialchars($name,ENT_QUOTES);
-
-        $dbh=db_connect();//try-catch呼び出し
-
-        $sql='INSERT INTO tasks(name,done) VALUES(?,0)';//?はプレースホルダ、直接値を入力しないようにしている
-
-        $stmt=$dbh->prepare($sql);//SQL文を準備するメソッド
-
-        $stmt->bindValue(1,$name,PDO::PARAM_STR);//変数の値とプレースホルダを結びつける
-
-        $stmt->execute();//ここでSQLが実行されて、dbのテーブルにデータが格納される。
-
-        $dbh=null;
-
-        unset($name);
-    }
-    // //原因特定のためのテスト
-    // echo "test";
-    // if(isset($_POST['method'])){//メソッドを受け取れていない
-    //     echo "成功";
-    // }
-    if(isset($_POST['method'])&&($_POST['method']==='put')){//済んだを押したものを更新して非表示にする
-        // echo "test2";
-        $id=$_POST["id"];
-        $id=htmlspecialchars($id,ENT_QUOTES);
-        $id=(int)$id;
-        $dbh=db_connect();
-        $sql='UPDATE tasks SET done=1 WHERE id=?';
-        $stmt=$dbh->prepare($sql);
-
-        $stmt->bindValue(1,$id,PDO::PARAM_INT);
-        $stmt->execute();
-
-        $dbh=null;
-    }
-
-    
+//削除処理
+if (isset($_POST['delete'])) {
+    $dbTodo->DeleteTodo($_POST['id']);
+}
+//新規登録処理
+if (isset($_POST['submitEntry'])) {
+    $dbTodo->InsertTodo();
+}
+//テーブルデータの一覧表示
+$data = $dbTodo->selectTodoAll();
 ?>
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Todoリスト</title>
-    <link rel="stylesheet" type="text/css" href="./css/style.css">
+    <link rel="stylesheet" type="text/css" href="./style.css">
 </head>
+
 <body>
-    <h1>Todoリスト</h1>
-    <form action="index.php" method="post">
-        <ul>
-            <li><span><input type="text" name="name"></span></li>
-            <li><input type="submit" name="submit"></li>
-        </ul>
-    </form>
-    <ul>
-    <?php
-        $dbh=db_connect();
-
-
-        $sql='SELECT id,name FROM tasks WHERE done=0 ORDER BY id DESC';//idカラムから降順に引っ張ってくる
-        $stmt=$dbh->prepare($sql);
-        $stmt->execute();
-        $dbh=null;
-
-        while($task=$stmt->fetch(PDO::FETCH_ASSOC)){//結果セットから一行取得します。$taskは配列
-            // echo "<pre>";
-            // echo var_dump($task);
-            // echo "<pre>";
-            print '<li>';
-            print $task["name"];
-            print '<br>';
-            print   '
-                    <form action="index.php" method="post">
-                        <input type="hidden" name="method" value="put">
-                        <input type="hidden" name="id" value="'.$task['id'].'">
-                        
-                        <input type="submit" value="済んだ">
-                    </form>
-                    ';
-            print '</li>';
-        }
-    ?>
-    </ul>
+    <div id="entry" <?php echo $entryCss;?>><!--入力画面-->
+        <h1>Todoリスト</h1>
+        <form action="" method="post">
+            やること<input type="text" name="todo" value="<?php if (isset($_POST['update'])){echo $_POST['text'];} ?>">
+            <input type="date" name="date" value="<?php if (isset($_POST['update'])){echo $_POST['date'];} ?>">
+            <input type="submit" value="追加" name="submitEntry">
+        </form><br>
+    </div>
+    <div id="update" <?php echo $updateCss;?>>
+        <form action="" method="post">
+            <h2>修正</h2>
+            <p>ID: <?php echo $dbTodoId;?>
+            </p>
+            <input type="hidden" name="id" value="<?php echo $dbTodoId;?>" />
+            <!--IDを変更できない形で先に出力する-->
+            <label><span class="entrylabel">Todo</span><input type='text' name='text' size="30"
+            value="<?php echo $dbTodoText;?>"required></label>
+            <label><span class="entrylabel">日付</span><input type='text' name='date' size="10"
+            value="<?php echo $dbDate;?>" required></label>
+            <input type='submit' name='submitUpdate' value=' 　送信　 '>
+        </form>
+    </div>
+    <?php echo $data ?>
 </body>
+
 </html>
