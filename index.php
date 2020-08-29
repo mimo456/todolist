@@ -1,7 +1,7 @@
 <?php
-echo "<pre>";
-echo var_dump($_POST);
-echo "</pre>";
+// echo "<pre>";
+// echo var_dump($_POST);
+// echo "</pre>";
 
 require_once('DBTodo.php');
 $dbTodo = new DBTodo();
@@ -49,41 +49,45 @@ $data = $dbTodo->selectTodoAll();
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Todoリスト</title>
     <link rel="stylesheet" type="text/css" href="./style.css">
+    <!-- <script type="text/javascript">
+        function CheckDelete() {
+            return confirm("削除してもよろしいですか？");
+        }
+    </script> -->
 </head>
 
 <body>
-    <div id="entry" <?php echo $entryCss;?>><!--入力画面-->
+    <div id="entry" <?= $entryCss;?>><!--入力画面-->
         <h1>Todoリスト</h1>
         <form action="" method="post">
             やること<input type="text" name="todo" value="<?php if (isset($_POST['update'])){echo $_POST['text'];} ?>">
             優先順位<select name="priority">
                 <option value="A">A</option>
                 <option value="B">B</option>
-                <option value="C">C</option>
+                <option value="C" selected>C</option>
             </select>
             <input type="submit" value="追加" name="submitEntry">
         </form><br>
     </div>
     <!-- 修正ボタンを押したら現れる入力画面 -->
-    <div id="update" <?php echo $updateCss;?>>
+    <div id="update" <?= $updateCss;?>>
         <form action="" method="post">
             <h2>修正</h2>
-            <p>ID: <?php echo $dbTodoId;?>
             </p>
-            <input type="hidden" name="id" value="<?php echo $dbTodoId;?>" />
+            <input type="hidden" name="id" value="<?= $dbTodoId;?>" />
             <!--IDを変更できない形で先に出力する-->
             <label><span class="entrylabel">Todo</span><input type='text' name='text' size="30"
-            value="<?php echo $dbTodoText;?>"required></label>
+            value="<?= $dbTodoText;?>"required></label>
             <label><span class="entrylabel">優先順位</span>
             <select name="priority">
                 <option value="A" <?= $_POST['priority'] == '低' ? 'selected' : "" ?>>A</option>
                 <option value="B" <?= $_POST['priority'] == '中' ? 'selected' : "" ?>>B</option>
-                <option value="C" <?= $_POST['priority'] == '高' ? 'selected' : "" ?>>C</option>
+                <option value="C" <?= $_POST['priority'] == '高' ? 'selected' : "" ?> selected>C</option>
             </select></label>
-            <input type='submit' name='submitUpdate' value=' 　送信　 '>
+            <input type='submit' name='submitUpdate' value=' 　修正　 '>
         </form>
     </div>
-    <?php echo $data ?>
+    <?= $data ?>
 </body>
 
 </html>
